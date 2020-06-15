@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>{{ course.title }}</h2>
+<p>{{ course.timestamp }}</p>
+<p>{{ course.content|safe }}</p>
+
+<h3>Lesson Comments     ({{ course.comments.count}})</h3>
+{% for comment in course.get_comments %}
+<div class="comment">
+<div class="image">
+  {% if comment.user.author %}
+  <img src="{{ comment.user.author.profile_pic.url }}" alt="" class="img-fluid rounded-circle" width="30px">
+  {% else %}
+  <img src="{% static 'images/user.png' %}" alt="" class="img-fluid rounded-circle" width="30px">
+  {% endif %}
+  <strong>{{ comment.user.username }}</strong>
+  <p>{{ comment.timestamp|timesince }} ago</p>
+</div>
+<div class="comment-body">
+<p>{{ comment.content }}</p>
+</div>
+</div>
+
+{% endfor %}
+<br><br>
+{% if request.user.is_authenticated %}
+<h3>Leave a comment</h3>
+<div class="add-comment">
+<form method="POST" action=".">
+{% csrf_token %}
+<div class="row">
+<div class="form-group col-md-12">
+  {{ form }}
+</div>
+
+</div>
+<button type="submit">Leave a comment</button>
+
+</form>
+{% else %}
+<a href="{% url 'account_login'%}">Login to comment</a>
+{% endif %}
+</div>
+
+{% endblock content %}
